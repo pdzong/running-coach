@@ -2,6 +2,7 @@
 
 Asks Polar for the last 31 days and saves any session that is not already in
 data/polar/index.json. Older backfill belongs in download_polar_history.py.
+New FIT files are then copied to Google Drive when that sign-in already exists.
 
   py -3 scripts/update_polar.py
   py -3 scripts/update_polar.py --dry-run
