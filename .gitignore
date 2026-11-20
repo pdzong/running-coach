@@ -1,3 +1,6 @@
+__pycache__/
+*.pyc
+
 # Polar sign-in. The script never stores the password; the browser profile does.
 .polar-profile/
 
