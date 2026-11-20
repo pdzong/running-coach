@@ -8,6 +8,9 @@ Examples:
   py -3 scripts/download_polar_history.py
   py -3 scripts/update_polar.py
   py -3 scripts/extract_polar_fit.py --start 2023-01-01 --end 2023-12-31
+
+After new files are saved, scripts/upload_polar_drive.py copies any FIT file
+that is not already in the Google Drive folder. Pass --no-upload to skip that.
 """
 
 from __future__ import annotations
@@ -15,6 +18,7 @@ from __future__ import annotations
 import argparse
 import json
 import re
+import subprocess
 import sys
 import time
 from datetime import date, datetime, timedelta
@@ -77,6 +81,11 @@ def build_parser() -> argparse.ArgumentParser:
         "--dry-run",
         action="store_true",
         help="List matching sessions and do not download them",
+    )
+    parser.add_argument(
+        "--no-upload",
+        action="store_true",
+        help="Do not copy new FIT files to Google Drive",
     )
     return parser
 
@@ -270,6 +279,16 @@ def download_fit(context, session_id: str) -> tuple[str, bytes]:
     return name, body
 
 
+def copy_new_files_to_drive(folder: Path) -> None:
+    script = Path(__file__).with_name("upload_polar_drive.py")
+    if not script.exists():
+        return
+    say("Copying FIT files that are not in Google Drive yet.")
+    completed = subprocess.run([sys.executable, str(script), "--dir", str(folder), "--if-authorized"])
+    if completed.returncode not in (0, 2):
+        say("Google Drive upload did not finish. The FIT files are still saved on this machine.")
+
+
 def main(argv: list[str] | None = None) -> int:
     try:
         sys.stdout.reconfigure(encoding="utf-8", errors="replace")
@@ -354,6 +373,8 @@ def main(argv: list[str] | None = None) -> int:
             context.close()
 
     say(f"Saved {saved}, skipped {skipped}, failed {len(failures)}.")
+    if saved and not args.no_upload:
+        copy_new_files_to_drive(out)
     if failures:
         return 1
     return 0

@@ -1,7 +1,8 @@
 """Download every Polar Flow session that is not already saved.
 
 Opens the same signed-in browser as extract_polar_fit.py. Sessions already
-listed in data/polar/index.json are skipped.
+listed in data/polar/index.json are skipped. Newly saved files are copied to
+Google Drive when that sign-in already exists.
 
   py -3 scripts/download_polar_history.py
   py -3 scripts/download_polar_history.py --dry-run
