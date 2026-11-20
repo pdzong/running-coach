@@ -1,0 +1,11 @@
+# Polar sign-in. The script never stores the password; the browser profile does.
+.polar-profile/
+
+# Google sign-in used only to upload FIT files.
+.google-profile/
+
+# Local training files. These stay on this machine and in Google Drive.
+data/
+
+# This machine's Drive folder id.
+config/drive.json
