@@ -177,15 +177,16 @@ def upload_file(context, folder_id: str, path: Path) -> None:
         raise RuntimeError(f"HTTP {uploaded.status}: {uploaded.text()[:300]}")
 
 
-def local_fit_files(folder: Path) -> list[Path]:
+def local_files(folder: Path, pattern: str) -> list[Path]:
     if not folder.exists():
-        raise SystemExit(f"No local Polar folder at {folder}")
-    return sorted(path for path in folder.glob("*.FIT") if path.is_file())
+        raise SystemExit(f"No local folder at {folder}")
+    return sorted(path for path in folder.glob(pattern) if path.is_file())
 
 
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument("--dir", type=Path, default=DEFAULT_DIR, help="Folder of local FIT files")
+    parser.add_argument("--glob", default="*.FIT", help="Which files in --dir to upload (default *.FIT)")
     parser.add_argument("--dry-run", action="store_true", help="Show files that would be uploaded")
     parser.add_argument("--headless", action="store_true", help="Hide the browser. Only works after a previous sign-in")
     parser.add_argument(
@@ -209,7 +210,7 @@ def main(argv: list[str] | None = None) -> int:
 
     args = build_parser().parse_args(argv)
     folder = args.dir if args.dir.is_absolute() else ROOT / args.dir
-    files = local_fit_files(folder)
+    files = local_files(folder, args.glob)
     if args.if_authorized and not profile_has_login():
         say("Google Drive is not signed in yet, so new FIT files stayed on this machine.")
         say("Run: py -3 scripts/upload_polar_drive.py")
@@ -222,7 +223,7 @@ def main(argv: list[str] | None = None) -> int:
         raise SystemExit("Playwright is not installed. From the project folder run:\n  py -3 -m pip install -r requirements.txt")
 
     channel = browser_channel()
-    say(f"Checking {len(files)} local FIT file(s) against Google Drive.")
+    say(f"Checking {len(files)} local file(s) against Google Drive.")
     with sync_playwright() as playwright:
         launch_kwargs = {
             "user_data_dir": str(PROFILE_DIR),

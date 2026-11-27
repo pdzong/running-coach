@@ -12,3 +12,6 @@ data/
 
 # This machine's Drive folder id.
 config/drive.json
+
+# Personal coaching notes: profile, plans, journal. Backed up by scripts/backup_athlete.py.
+athlete/
