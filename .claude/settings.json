@@ -1,0 +1,16 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(py -3 scripts/analysis/report.py:*)",
+      "Bash(py -3 scripts/analysis/build_dataset.py:*)",
+      "Bash(py -3 scripts/fetch_polar.py:*)",
+      "Bash(py -3 scripts/backup_athlete.py:*)",
+      "Read(athlete/**)",
+      "Edit(athlete/**)"
+    ],
+    "deny": [
+      "Read(.polar-profile/**)",
+      "Read(.google-profile/**)"
+    ]
+  }
+}
